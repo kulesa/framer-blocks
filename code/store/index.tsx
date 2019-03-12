@@ -16,7 +16,8 @@ class DataStore {
   }
 
   set(id: string, data: any): void {
-    const key = id.split("./")[0];
+    // IDs are different when installed from store and locally
+    const key = id.split("./")[0] || id.split("@")[0];
     this.store[key] = data;
   }
 
