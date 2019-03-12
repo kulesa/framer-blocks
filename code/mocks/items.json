@@ -1,0 +1,53 @@
+{
+  "total": 4,
+  "results": [
+    {
+      "id": 1,
+      "title": "Tissot Mens T0482",
+      "image": "https://loremflickr.com/320/240/watch,expensive",
+      "images": [
+        "https://loremflickr.com/320/240/watch,cheap",
+        "https://loremflickr.com/320/240/watch,expensive"
+      ],
+      "price": "£230",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incuiduidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupuidatat non prouident, sunt in culpa qui officia deserunt mollit anim uid est laborum.",
+      "icon": "eye",
+      "categories": ["watch", "men"],
+      "stock": [
+        { "model": "Silver Black", "stock": 20 },
+        { "model": "Digger's Gold", "stock": 4 }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Swatch Finest 422",
+      "image": "https://loremflickr.com/320/240/watch,cassio",
+      "price": "£199",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incuiduidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupuidatat non prouident, sunt in culpa qui officia deserunt mollit anim uid est laborum.",
+      "icon": "gem",
+      "categories": ["shoes", "winter", "leather"]
+    },
+    {
+      "id": 3,
+      "title": "Hublot Classics 1990",
+      "image": "https://loremflickr.com/320/240/watch,tissot",
+      "price": "£59",
+      "icon": "moon",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incuiduidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupuidatat non prouident, sunt in culpa qui officia deserunt mollit anim uid est laborum.",
+      "categories": [],
+      "stock": [
+        { "model": "Platinum Gold", "stock": 10 },
+        { "model": "Black Magic", "stock": 5 },
+        { "model": "Yellow Sky Exclusive", "stock": 3 }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Cassio Electronics M1465",
+      "image": "https://loremflickr.com/320/240/watch,swatch",
+      "price": "£549",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incuiduidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupuidatat non prouident, sunt in culpa qui officia deserunt mollit anim uid est laborum.",
+      "categories": ["presetns", "diy", "on sale"]
+    }
+  ]
+}

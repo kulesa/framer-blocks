@@ -1,0 +1,25 @@
+{
+  "main": "dist/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@framer/framer.device-skin-apple-iphone8-silver": "^1.0.0",
+    "@framer/framer.device-skin-apple-iphone8-space-gray": "^1.0.0",
+    "@types/react": "^16.4.16"
+  },
+  "peerDependencies": {
+    "framer": "^0.10",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0"
+  },
+  "framer": {
+    "id": "6773f7c3-e6cf-471b-aed4-8b4cd3f49c50"
+  },
+  "author": "Dan Griffiths",
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.4",
+    "@fortawesome/free-regular-svg-icons": "^5.3.1",
+    "@fortawesome/react-fontawesome": "^0.1.2",
+    "feather-icons-react": "^0.2.0",
+    "lodash": "^4.17.11"
+  }
+}
