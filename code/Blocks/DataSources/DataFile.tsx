@@ -11,7 +11,6 @@ interface Props {
   file?: string;
   height: string | number;
   path: string | null;
-  debug: boolean;
   showAdvanced: boolean;
   width: string | number;
 }
@@ -38,12 +37,6 @@ export class DataFile extends React.Component<Props, State> {
       defaultValue: false,
       disabledTitle: "No",
       enabledTitle: "Yes"
-    },
-    debug: {
-      type: ControlType.Boolean,
-      title: "Debug",
-      defaultValue: false,
-      hidden: props => !props.showAdvanced
     }
   };
 
@@ -163,7 +156,7 @@ export class DataFile extends React.Component<Props, State> {
   }
 
   render() {
-    const { debug, height, width } = this.props;
+    const { showAdvanced, height, width } = this.props;
     const { data } = this.state;
 
     const { icon, info, title } = this.getInfo();
@@ -187,7 +180,7 @@ export class DataFile extends React.Component<Props, State> {
               </div>
             )}
           </EmptyComponent>
-          {debug && this.debugInfo()}
+          {showAdvanced && this.debugInfo()}
         </React.Fragment>
       );
     }
@@ -195,7 +188,7 @@ export class DataFile extends React.Component<Props, State> {
     return (
       <Context.Provider value={{ data, update: this.update }}>
         {this.props.children}
-        {debug && this.debugInfo()}
+        {showAdvanced && this.debugInfo()}
       </Context.Provider>
     );
   }
@@ -216,7 +209,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "1px #0099FF solid",
     fontSize: 12,
     padding: 16,
-    maxWidth: 400,
     textAlign: "left"
   },
   title: {

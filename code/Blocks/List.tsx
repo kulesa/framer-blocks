@@ -16,6 +16,7 @@ import { EmptyComponent } from "./Empty";
 import { overrideDesign } from "../override";
 import { Context } from "../override";
 import { Store } from "../store";
+import { replacer } from "../utils";
 
 interface ListProps extends StackProps {
   alignment: StackAlignment;
@@ -31,6 +32,7 @@ interface ListProps extends StackProps {
   limit: number;
   reactKey: string;
   showEmpty: boolean;
+  showAdvanced: boolean;
   width: number | string;
 }
 
@@ -67,6 +69,13 @@ export class List extends React.Component<ListProps> {
       defaultValue: "id"
     },
     ...Stack.propertyControls,
+    showAdvanced: {
+      type: ControlType.Boolean,
+      title: "Advanced",
+      defaultValue: false,
+      disabledTitle: "No",
+      enabledTitle: "Yes"
+    },
     limit: {
       type: ControlType.Number,
       min: 1,
@@ -145,6 +154,7 @@ export class List extends React.Component<ListProps> {
       alignment,
       backgroundColor,
       children,
+      showAdvanced,
       distribution,
       direction,
       gap,
@@ -211,27 +221,52 @@ export class List extends React.Component<ListProps> {
     const override = overrideDesign(component);
 
     return (
-      <Scroll {...scrollProps}>
-        <Frame {...stackFrameProps}>
-          <Stack {...stackProps}>
-            {items.map(item => (
-              <Frame {...contentProps} key={item[reactKey]}>
-                {override({
-                  ...item,
-                  width:
-                    direction === "vertical"
-                      ? stackWidth - padding * 4
-                      : rowWidth,
-                  height:
-                    direction === "horizontal"
-                      ? stackHeight - padding * 4
-                      : rowHeight
-                })}
-              </Frame>
-            ))}
-          </Stack>
-        </Frame>
-      </Scroll>
+      <React.Fragment>
+        <Scroll {...scrollProps}>
+          <Frame {...stackFrameProps}>
+            <Stack {...stackProps}>
+              {items.map(item => (
+                <Frame {...contentProps} key={item[reactKey]}>
+                  {override({
+                    ...item,
+                    width:
+                      direction === "vertical"
+                        ? stackWidth - padding * 4
+                        : rowWidth,
+                    height:
+                      direction === "horizontal"
+                        ? stackHeight - padding * 4
+                        : rowHeight
+                  })}
+                </Frame>
+              ))}
+            </Stack>
+          </Frame>
+        </Scroll>
+        {showAdvanced && this.debugInfo()}
+      </React.Fragment>
+    );
+  }
+
+  debugInfo() {
+    const dataSource = this.props.dataSource[0];
+
+    const debugData = {
+      "Object.keys(Store)": Store.keys.join(", "),
+      source: dataSource ? dataSource.props.id : "--",
+      data: dataSource
+        ? JSON.stringify(Store.get(dataSource.props.id), replacer(0), 2)
+        : "--"
+    };
+
+    return (
+      <div style={styles.debug}>
+        {Object.keys(debugData).map(key => (
+          <div key={key}>
+            <strong>{key}</strong>: {debugData[key]}
+          </div>
+        ))}
+      </div>
     );
   }
 
@@ -253,3 +288,16 @@ export class List extends React.Component<ListProps> {
     return this.renderContent(get(data, path, []));
   }
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  debug: {
+    position: "absolute",
+    bottom: -100,
+    left: 0,
+    backgroundColor: "#ceb",
+    border: "1px #0099FF solid",
+    fontSize: 12,
+    padding: 16,
+    textAlign: "left"
+  }
+};
