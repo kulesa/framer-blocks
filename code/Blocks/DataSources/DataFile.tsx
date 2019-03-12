@@ -163,33 +163,24 @@ export class DataFile extends React.Component<Props, State> {
 
     const flexDirection = isNull(data) ? "column" : "row";
 
-    if (React.Children.count(this.props.children) === 0) {
-      return (
-        <React.Fragment>
-          <EmptyComponent
-            icon={icon}
-            height={height}
-            width={width}
-            flexDirection={flexDirection}
-            justifyContent="space-evenly"
-          >
-            {title && <div style={styles.title}>{title}</div>}
-            {info && (
-              <div style={styles.info}>
-                <code>{info}</code>
-              </div>
-            )}
-          </EmptyComponent>
-          {showAdvanced && this.debugInfo()}
-        </React.Fragment>
-      );
-    }
-
     return (
-      <Context.Provider value={{ data, update: this.update }}>
-        {this.props.children}
+      <React.Fragment>
+        <EmptyComponent
+          icon={icon}
+          height={height}
+          width={width}
+          flexDirection={flexDirection}
+          justifyContent="space-evenly"
+        >
+          {title && <div style={styles.title}>{title}</div>}
+          {info && (
+            <div style={styles.info}>
+              <code>{info}</code>
+            </div>
+          )}
+        </EmptyComponent>
         {showAdvanced && this.debugInfo()}
-      </Context.Provider>
+      </React.Fragment>
     );
   }
 }
