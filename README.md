@@ -1,9 +1,5 @@
 # framer-blocks
 
-Data-driven design for Framer
-
-# Overview
-
 **`framer-blocks`** is an experimental set of components that can use data from shared data sources and pass data down the component tree.
 
 ## Components
