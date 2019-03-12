@@ -1,5 +1,7 @@
 # framer-blocks
 
+## Overview
+
 **`framer-blocks`** is an experimental set of components that can use data from shared data sources and pass data down the component tree.
 
 ## Components
@@ -16,7 +18,7 @@ Right now Blocks just a few components to demonstrate how different blocks can w
 
 -**`Empty`**: special component that takes `message` and `icon` props and outouts some information. You can redefine how it renders by attaching a code component!
 
-# Usage
+## Usage
 
 - Add a data source to canvas (right now only `DataFile` component is available),
 - Add a `List` component and connect it to DataFile,
