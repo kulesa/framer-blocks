@@ -1,5 +1,5 @@
 import * as React from "react";
-import { get, take } from "lodash";
+import { get, pick, take } from "lodash";
 import {
   ControlType,
   Frame,
@@ -28,13 +28,24 @@ interface ListProps extends StackProps {
   gap: number;
   height: number | string;
   padding: number;
+  paddingPerSide: boolean;
+  paddintTop: number;
+  paddintRight: number;
+  paddintBottom: number;
+  paddintLeft: number;
   path: string;
   limit: number;
   reactKey: string;
+  responsive: boolean;
   showEmpty: boolean;
   showAdvanced: boolean;
   width: number | string;
 }
+
+const booleanTitles = {
+  disabledTitle: "No",
+  enabledTitle: "Yes"
+};
 
 export class List extends React.Component<ListProps> {
   static defaultProps = {
@@ -58,10 +69,17 @@ export class List extends React.Component<ListProps> {
       type: ControlType.Color,
       title: "Background"
     },
+    responsive: {
+      type: ControlType.Boolean,
+      title: "Responsive",
+      defaultValue: true,
+      ...booleanTitles
+    },
     showEmpty: {
       type: ControlType.Boolean,
       title: "Show empty?",
-      defaultValue: true
+      defaultValue: true,
+      ...booleanTitles
     },
     reactKey: {
       type: ControlType.String,
@@ -73,8 +91,7 @@ export class List extends React.Component<ListProps> {
       type: ControlType.Boolean,
       title: "Advanced",
       defaultValue: false,
-      disabledTitle: "No",
-      enabledTitle: "Yes"
+      ...booleanTitles
     },
     limit: {
       type: ControlType.Number,
@@ -98,7 +115,7 @@ export class List extends React.Component<ListProps> {
     }
   };
 
-  getSizes({
+  getStackSize({
     items,
     rowHeight,
     rowWidth
@@ -107,21 +124,45 @@ export class List extends React.Component<ListProps> {
     rowHeight: number;
     rowWidth: number;
   }): { stackHeight: number; stackWidth: number } {
-    const { direction, gap, height, width } = this.props;
+    const { direction, gap, responsive, height, width } = this.props;
 
     let stackHeight, stackWidth;
 
     if (direction === "vertical") {
       const listHeight = (rowHeight + gap) * items.length;
       stackHeight = listHeight > height ? listHeight : height;
-      stackWidth = width;
+      stackWidth = responsive ? width : rowWidth;
     } else {
       const listWidth = (rowWidth + gap) * items.length;
       stackWidth = listWidth > width ? listWidth : height;
-      stackHeight = height;
+      stackHeight = responsive ? height : rowHeight;
     }
 
     return { stackHeight, stackWidth };
+  }
+
+  // always use side paddings
+  getPaddings() {
+    const { padding, paddingPerSide } = this.props;
+    const defaultPadding = paddingPerSide ? 0 : padding;
+    const sidePaddings = [
+      "paddingLeft",
+      "paddingRight",
+      "paddingTop",
+      "paddingBottom"
+    ].reduce(
+      (res, key) => ({
+        ...res,
+        [key]: paddingPerSide ? get(this.props, key, defaultPadding) : padding
+      }),
+      {}
+    );
+
+    return {
+      padding: 0,
+      paddingPerSide: false,
+      ...sidePaddings
+    };
   }
 
   renderEmpty({
@@ -160,8 +201,8 @@ export class List extends React.Component<ListProps> {
       gap,
       height,
       limit,
-      padding,
       reactKey,
+      responsive,
       showEmpty,
       width
     } = this.props;
@@ -172,7 +213,6 @@ export class List extends React.Component<ListProps> {
 
     const component = children[0];
     const { height: rowHeight, width: rowWidth } = component.props;
-    const style: Partial<React.CSSProperties> = { backgroundColor, padding };
 
     const items = take(Array.isArray(data) ? data : [data], limit);
 
@@ -187,11 +227,17 @@ export class List extends React.Component<ListProps> {
       }
     }
 
-    const { stackHeight, stackWidth } = this.getSizes({
+    const { stackHeight, stackWidth } = this.getStackSize({
       items,
       rowHeight,
       rowWidth
     });
+
+    const paddings = this.getPaddings();
+    const style: Partial<React.CSSProperties> = {};
+
+    const paddingX: number = paddings.paddingLeft + paddings.paddingRight;
+    const paddingY: number = paddings.paddingTop + paddings.paddingBottom;
 
     const scrollProps = { direction, height, width, overflow: "hidden" };
     const stackProps = {
@@ -199,25 +245,38 @@ export class List extends React.Component<ListProps> {
       direction,
       distribution,
       gap,
-      height: stackHeight,
+      ...paddings,
+      height: stackHeight - paddingY,
       width: stackWidth,
-      top: 0,
-      left: 0
+      left: direction === "horizontal" ? paddings.paddingLeft : 0,
+      top: direction === "vertical" ? paddings.paddingTop : 0,
+      style: { backgroundColor }
     };
     const stackFrameProps = {
       height: stackHeight,
       width: stackWidth,
-      style,
-      left: 0,
-      top: 0
+      style: { backgroundColor },
+      top: 0,
+      left: 0
+    };
+
+    const contentSize = {
+      width:
+        direction === "vertical" && responsive
+          ? stackWidth - paddingX
+          : rowWidth,
+      height:
+        direction === "horizontal" && responsive
+          ? stackHeight - paddingY
+          : rowHeight
     };
     const contentProps = {
-      height: rowHeight,
-      width: rowWidth,
       left: 0,
       top: 0,
-      style
+      style: { backgroundColor },
+      ...contentSize
     };
+
     const override = overrideDesign(component);
 
     return (
@@ -227,17 +286,7 @@ export class List extends React.Component<ListProps> {
             <Stack {...stackProps}>
               {items.map(item => (
                 <Frame {...contentProps} key={item[reactKey]}>
-                  {override({
-                    ...item,
-                    width:
-                      direction === "vertical"
-                        ? stackWidth - padding * 4
-                        : rowWidth,
-                    height:
-                      direction === "horizontal"
-                        ? stackHeight - padding * 4
-                        : rowHeight
-                  })}
+                  {override({ ...item, ...contentSize })}
                 </Frame>
               ))}
             </Stack>
