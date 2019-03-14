@@ -130,7 +130,7 @@ export class List extends React.Component<ListProps> {
   }: {
     message: string;
     icon?: string;
-  }): JSX.Element {
+  }): React.ReactNode {
     const { emptyContent, height, width } = this.props;
     if (React.Children.count(emptyContent) !== 0) {
       const contentProps = {
@@ -149,7 +149,7 @@ export class List extends React.Component<ListProps> {
     );
   }
 
-  renderContent(data): JSX.Element {
+  renderContent(data): React.ReactNode {
     const {
       alignment,
       backgroundColor,
