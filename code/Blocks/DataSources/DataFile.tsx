@@ -1,16 +1,31 @@
 import * as React from "react";
-import { get, isEmpty, isNull, isObject, last } from "lodash";
+import {
+  get,
+  isEmpty,
+  isNull,
+  isString,
+  isNumber,
+  isBoolean,
+  reduce,
+  last
+} from "lodash";
 import { PropertyControls, ControlType } from "framer";
 import { Store } from "../../store";
 import { EmptyComponent } from "../Empty";
-import { Context } from "../../override";
 import { replacer } from "../../utils";
+
+function valueFromProps(props: Props) {
+  const { name, valueType } = props;
+  return { [name]: props[`value_${valueType}`] };
+}
 
 interface Props {
   id: string;
-  file?: string;
+  dataSources: React.ReactNode;
+  field: string;
+  file: string | null;
   height: string | number;
-  path: string | null;
+  path: string | void;
   showAdvanced: boolean;
   width: string | number;
 }
@@ -25,10 +40,10 @@ export class DataFile extends React.Component<Props, State> {
       type: ControlType.File,
       allowedFileTypes: ["json", "js"]
     },
-    path: {
+    field: {
       type: ControlType.String,
-      title: "Path",
-      placeholder: "e.g. data[0].products",
+      title: "Name",
+      placeholder: "",
       defaultValue: ""
     },
     showAdvanced: {
@@ -37,6 +52,20 @@ export class DataFile extends React.Component<Props, State> {
       defaultValue: false,
       disabledTitle: "No",
       enabledTitle: "Yes"
+    },
+    path: {
+      type: ControlType.String,
+      title: "Path",
+      placeholder: "e.g. data[0].products",
+      defaultValue: "",
+      hidden: props => !props.showAdvanced
+    },
+    dataSources: {
+      type: ControlType.Array,
+      propertyControl: {
+        type: ControlType.ComponentInstance,
+        title: "Data Source"
+      }
     }
   };
 
@@ -69,19 +98,36 @@ export class DataFile extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const { file, id } = this.props;
-    const data = Store.get(id);
-
-    if (!isEmpty(data)) {
-      this.update(data);
-      return;
-    }
+    const { id } = this.props;
 
     if (!this.isFileEmpty()) this.loadFile();
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.file !== this.props.file) {
+  componentDidUpdate(prevProps, prevState) {
+    const { file, dataSources } = this.props;
+    const prevIds = prevProps.dataSources.map(source => source.props.id);
+    const ids = React.Children.map(dataSources, source => source.props.id);
+
+    console.log("sources: ", prevIds, ids, dataSources, this.state);
+
+    if (
+      JSON.stringify(prevProps.dataSources, replacer(2), 0) !==
+      JSON.stringify(this.props.dataSources, replacer(2), 0)
+    ) {
+      const childData = reduce(
+        dataSources,
+        (res, source) => {
+          const { props } = source.props.children[0];
+          console.log("vfp:", valueFromProps(props));
+          return { ...res, ...valueFromProps(props) };
+        },
+        {}
+      );
+      console.log("CD: ", childData);
+      this.update({ ...this.state.data, ...childData });
+    }
+
+    if (prevProps.file !== file) {
       if (this.isFileEmpty()) {
         this.remove();
       } else {
@@ -97,11 +143,9 @@ export class DataFile extends React.Component<Props, State> {
     const debugData = {
       id,
       file,
-      "Object.keys(data)": get(data, "results", ["nope"]).join(", "),
       "Object.keys(Store)": Store.keys.join(", "),
       "Object.keys(this)": Object.keys(this).join(", "),
-      "Object.keys(props)": Object.keys(this.props).join(", "),
-      standalone: this.props.hasOwnProperty("_forwardedOverrides").toString()
+      "Object.keys(props)": Object.keys(this.props).join(", ")
     };
 
     return (
@@ -121,14 +165,26 @@ export class DataFile extends React.Component<Props, State> {
 
     const showData = isEmpty(path) ? data : get(data, path, null);
     const json = JSON.parse(JSON.stringify(showData, replacer(0), 2));
+
+    const jsonPretty = (obj: any, level = 0): string | React.ReactNode => {
+      if (isString(obj)) return `'${obj}'`;
+      if (isNumber(obj)) return obj;
+      if (isBoolean(obj)) return obj ? "Yes" : "No";
+
+      return Object.keys(obj).map(key => (
+        <div
+          key={`${key}:${obj[key]}`}
+          style={{ paddingLeft: (level + 1) * 8 }}
+        >
+          {key}: {jsonPretty(obj[key], level + 1)}
+        </div>
+      ));
+    };
+
     return (
       <div style={{ textAlign: "left", marginLeft: 24, maxHeight: 300 }}>
         <div>{"{"}</div>
-        {Object.keys(json).map(key => (
-          <div key={`${key}:${json[key]}`}>
-            &nbsp;&nbsp;{key}: {json[key]}
-          </div>
-        ))}
+        {jsonPretty(json)}
         <div>{"}"}</div>
       </div>
     );
