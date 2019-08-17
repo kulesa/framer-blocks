@@ -1,25 +1,30 @@
 {
+  "name": "@kulesa/framer.blocks",
+  "version": "1.199.0",
   "main": "dist/index.js",
   "license": "MIT",
   "devDependencies": {
-    "@framer/framer.device-skin-apple-iphone8-silver": "^1.0.0",
-    "@framer/framer.device-skin-apple-iphone8-space-gray": "^1.0.0",
-    "@types/react": "^16.4.16"
+    "@types/react": "^16.9.1",
+    "@types/react-dom": "^16.8.5"
   },
   "peerDependencies": {
-    "framer": "^0.10",
-    "react": "^16.3.0",
-    "react-dom": "^16.3.0"
+    "framer": "^1.0.17",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
   },
   "framer": {
-    "id": "6773f7c3-e6cf-471b-aed4-8b4cd3f49c50"
+    "id": "6773f7c3-e6cf-471b-aed4-8b4cd3f49c50",
+    "displayName": "Framer Blocks"
   },
   "author": "Dan Griffiths",
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.4",
-    "@fortawesome/free-regular-svg-icons": "^5.3.1",
-    "@fortawesome/react-fontawesome": "^0.1.2",
-    "feather-icons-react": "^0.2.0",
-    "lodash": "^4.17.11"
+    "@fortawesome/fontawesome-svg-core": "^1.2.21",
+    "@fortawesome/free-regular-svg-icons": "^5.10.1",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "feather-icons-react": "^0.3.2",
+    "framer-motion": "^1.6.1",
+    "localforage": "^1.7.3",
+    "lodash": "^4.17.15",
+    "zustand": "^1.0.4"
   }
 }

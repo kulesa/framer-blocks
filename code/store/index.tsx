@@ -1,34 +1,66 @@
-import { Data } from "framer";
+import * as React from "react";
+import createStore from "zustand";
+import * as localforage from "localforage";
+import { reduce, omit } from "lodash";
 
-class DataStore {
-  protected store: { [propName: string]: any };
+type StoreContent = {
+  data: { [key: string]: any };
+  relations: { [key: string]: Array<string> };
+};
 
-  constructor() {
-    this.store = Data({});
-  }
+type StoreActions = {
+  initiate: () => void;
+  getData: (id: string) => any;
+  setData: (id: string) => (value: any, childrenIds?: Array<string>) => void;
+  remove: (id: string) => () => void;
+};
 
-  alternativeKey(id: string): string {
-    return id.substr(id.indexOf("_") + 1, id.length - 1);
-  }
+type BlocksStore = StoreContent & StoreActions;
 
-  get(id: string): any {
-    return this.store[id] || this.store[this.alternativeKey(id)];
-  }
+const blocksStore = localforage.createInstance({ name: "blocks" });
 
-  set(id: string, data: any): void {
-    // IDs are different when installed from store and locally
-    const key = id.match("@") ? id.split("@")[0] : id.split("./")[0];
-    this.store[key] = data;
-  }
+const [useStore] = createStore<BlocksStore>((set, get) => {
+  return {
+    data: {},
+    relations: {},
+    initiate: async () => {
+      const store: StoreContent = (await blocksStore.getItem("store")) || {
+        data: {},
+        relations: {}
+      };
+      set(state => ({
+        data: { ...state.data, ...store.data },
+        relations: { ...state.relations, ...store.relations }
+      }));
+    },
+    setData: id => (value, childrenIds = []) => {
+      set((state: StoreContent) => {
+        const data = { ...state.data, [id]: value };
+        const relations = { ...state.relations, [id]: childrenIds };
+        blocksStore.setItem("store", { data, relations });
+        return { data, relations };
+      });
+    },
+    getData: id => {
+      const state: BlocksStore = get();
+      if (Object.keys(state.data).length === 0) state.initiate();
+      const data = state.data[id] || {};
+      const childrenData = reduce(
+        state.relations[id],
+        (res, childId) => ({ ...res, ...state.data[childId] }),
+        {}
+      );
+      return {
+        ...childrenData,
+        ...data
+      };
+    },
+    remove: id => () =>
+      set(state => ({
+        data: omit(state.data, id),
+        relations: omit(state.relations, id)
+      }))
+  };
+});
 
-  get keys(): Array<string> {
-    return Object.keys(this.store);
-  }
-
-  remove(id: string): void {
-    delete this.store[id];
-    delete this.store[this.alternativeKey(id)];
-  }
-}
-
-export const Store = new DataStore();
+export default useStore;

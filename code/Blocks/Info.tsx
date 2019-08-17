@@ -1,14 +1,15 @@
 import * as React from "react";
 import FeatherIcon from "feather-icons-react";
 
-export const EmptyComponent = ({
+export const Info = ({
   icon = "book-open",
   backgroundColor = "white",
   flexDirection = "column",
   justifyContent = "center",
   children,
   height,
-  width
+  width,
+  padding = 16
 }) => {
   const iconSize = Math.min(height, width) / 3;
   const message = React.Children.count(children) > 0 ? children : "Empty";
@@ -21,7 +22,8 @@ export const EmptyComponent = ({
         width,
         flexDirection,
         justifyContent,
-        backgroundColor
+        backgroundColor,
+        padding
       }}
     >
       {height > 80 && (
@@ -30,7 +32,7 @@ export const EmptyComponent = ({
             icon={icon}
             width={iconSize}
             height={iconSize}
-            color="#000"
+            color='#000'
           />
         </div>
       )}
@@ -41,11 +43,14 @@ export const EmptyComponent = ({
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    fontSize: 24,
+    borderRadius: 8,
+    boxShadow: "0px 2px 5px 0px rgba(0, 0, 0, 0.25)",
+    fontSize: 16,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    textAlign: "center"
+    textAlign: "left",
+    minWidth: 300
   },
   icon: {},
   message: { fontSize: 24 }
